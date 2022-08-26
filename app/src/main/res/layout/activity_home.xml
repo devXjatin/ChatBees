@@ -6,4 +6,37 @@
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:gravity="right"
+        android:orientation="horizontal"
+        android:layout_height="@dimen/_40sdp"
+        android:background="@color/primary_blue">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginLeft="@dimen/_15sdp"
+            android:textSize="@dimen/_16sdp"
+            android:text="@string/app_name"/>
+        <ImageView
+            android:id="@+id/img_logOut"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:background="@drawable/off"
+            android:layout_gravity="center"
+            android:layout_marginRight="@dimen/_30sdp"/>
+
+    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:id="@+id/mainUserRecyclerView"/>
+
 </RelativeLayout>

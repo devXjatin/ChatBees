@@ -1,6 +1,7 @@
 package com.example.chatbees;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,12 +38,17 @@ public class RegistrationActivity extends AppCompatActivity {
     FirebaseDatabase database;
     FirebaseStorage storage;
     String imageURI;
+    ProgressDialog progressDialog;
 
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
 
         //firebase authentication instance
         auth = FirebaseAuth.getInstance();
@@ -62,6 +68,7 @@ public class RegistrationActivity extends AppCompatActivity {
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressDialog.show();
                 String name = regName.getText().toString();
                 String email = regEmail.getText().toString();
                 String password = regPassword.getText().toString();
@@ -70,11 +77,14 @@ public class RegistrationActivity extends AppCompatActivity {
 
                 //data validation
                 if(TextUtils.isEmpty(name) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password)|| TextUtils.isEmpty(cPassword)){
+                    progressDialog.dismiss();
                     Toast.makeText(RegistrationActivity.this, "Invalid Data", Toast.LENGTH_SHORT).show();
                 }else if(!email.matches(emailPattern)){
+                    progressDialog.dismiss();
                     regEmail.setError("Invalid Email");
                     Toast.makeText(RegistrationActivity.this, "Invalid Email", Toast.LENGTH_SHORT).show();
                 }else if(!password.equals(cPassword)){
+                    progressDialog.dismiss();
                     Toast.makeText(RegistrationActivity.this, "Password Doesn't Match", Toast.LENGTH_SHORT).show();
                 }else{
                     //create user
@@ -91,6 +101,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                                             if(task.isSuccessful()){
+                                                progressDialog.dismiss();
                                                 storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                                     @Override
                                                     public void onSuccess(Uri uri) {
@@ -126,6 +137,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                     });
                                 }
                             }else{
+                                progressDialog.dismiss();
                                 Toast.makeText(RegistrationActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
                             }
                         }
