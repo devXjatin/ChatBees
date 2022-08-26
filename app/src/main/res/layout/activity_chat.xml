@@ -58,6 +58,7 @@
             app:cardCornerRadius="@dimen/_540sdp">
 
             <EditText
+                android:id="@+id/send_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -69,6 +70,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/send_btn"
             android:layout_width="@dimen/_80sdp"
             android:layout_height="@dimen/_35sdp"
             android:layout_margin="@dimen/_3sdp"
