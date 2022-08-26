@@ -1,7 +1,11 @@
 package com.example.chatbees;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +28,7 @@ public class HomeActivity extends AppCompatActivity {
     UserAdapter adapter;
     FirebaseDatabase database;
     ArrayList<Users> usersArrayList;
+    ImageView imgLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +56,42 @@ public class HomeActivity extends AppCompatActivity {
 
             }
         });
-
+        imgLogout = findViewById(R.id.img_logOut);
         mainUserRecyclerView = findViewById(R.id.mainUserRecyclerView);
         mainUserRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter= new UserAdapter(HomeActivity.this,usersArrayList);
         mainUserRecyclerView.setAdapter(adapter);
 
+
+        imgLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Dialog dialog =new Dialog(HomeActivity.this, R.style.Dialoge);
+                dialog.setContentView(R.layout.dialog_layout);
+                TextView yesBtn, noBtn;
+                yesBtn = dialog.findViewById(R.id.yesbtn);
+                noBtn= dialog.findViewById(R.id.nobtn);
+                dialog.show();
+
+                //signout
+                yesBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        FirebaseAuth.getInstance().signOut();
+                        startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+                    }
+                });
+
+                //no button
+                noBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
+            }
+        });
 
         if(auth.getCurrentUser()==null){
             startActivity(new Intent(HomeActivity.this, RegistrationActivity.class));

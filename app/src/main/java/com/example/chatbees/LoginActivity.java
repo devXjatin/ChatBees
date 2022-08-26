@@ -1,5 +1,6 @@
 package com.example.chatbees;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -22,12 +23,17 @@ public class LoginActivity extends AppCompatActivity {
     TextView signInBtn;
     FirebaseAuth auth;
     String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+    ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         auth = FirebaseAuth.getInstance();
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
 
         txt_signup = findViewById(R.id.txt_signup);
         signInBtn = findViewById(R.id.signin_btn);
@@ -38,25 +44,27 @@ public class LoginActivity extends AppCompatActivity {
         signInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressDialog.show();
                 String email = loginEmail.getText().toString();
                 String password = loginPassword.getText().toString();
 
                 //check credentials validation
                 if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password)){
+                    progressDialog.dismiss();
                     Toast.makeText(LoginActivity.this, "Invalid Credentials", Toast.LENGTH_SHORT).show();
                 }else if(!email.matches(emailPattern)){
+                    progressDialog.dismiss();
                     loginEmail.setError("Invalid Email");
-                }else if(password.length()>6){
-                    loginPassword.setError("Invalid Password");
-                    Toast.makeText(LoginActivity.this, "Invalid Password", Toast.LENGTH_SHORT).show();
                 }else{
                     //check authentication
                     auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
-                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                progressDialog.dismiss();
+                                startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                             }else{
+                                progressDialog.dismiss();
                                 Toast.makeText(LoginActivity.this, "Error in Login", Toast.LENGTH_SHORT).show();
                             }
                         }
