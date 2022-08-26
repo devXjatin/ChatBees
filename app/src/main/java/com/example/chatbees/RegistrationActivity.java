@@ -73,6 +73,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 String email = regEmail.getText().toString();
                 String password = regPassword.getText().toString();
                 String cPassword = regCPassword.getText().toString();
+                String status = "Hey, There i'm using Chat Bees!";
 
 
                 //data validation
@@ -106,7 +107,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                                     @Override
                                                     public void onSuccess(Uri uri) {
                                                         imageURI = uri.toString();
-                                                        Users users = new Users(auth.getUid(), name, email,imageURI);
+                                                        Users users = new Users(auth.getUid(), name, email,imageURI, status);
                                                         databaseReference.setValue(users).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
@@ -123,8 +124,9 @@ public class RegistrationActivity extends AppCompatActivity {
                                         }
                                     });
                                 }else{
+                                    String status = "Hey, There i'm using Chat Bees!";
                                     imageURI = "https://firebasestorage.googleapis.com/v0/b/chatbees-7c4bf.appspot.com/o/profile_image.png?alt=media&token=3aeaaf6a-5456-456f-9a98-aa79d561a136";
-                                    Users users = new Users(auth.getUid(), name, email,imageURI);
+                                    Users users = new Users(auth.getUid(), name, email,imageURI, status);
                                     databaseReference.setValue(users).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
