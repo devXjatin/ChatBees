@@ -3,11 +3,13 @@ package com.example.chatbees;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,58 +29,73 @@ import java.util.Date;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
-    String receiverImage, receiverUid, receiverName, senderUid;
+    String ReceiverImage, ReceiverUid, ReceiverName, SenderUid;
     CircleImageView profileImage;
-    TextView receiverChatName;
+    TextView receiverName;
     FirebaseDatabase database;
     FirebaseAuth firebaseAuth;
-    public static String senderImage;
+    public static String sImage;
     public static String rImage;
 
     CardView sendBtn;
-    EditText sendMessage;
+    EditText edtMessage;
 
     String senderRoom, receiverRoom;
 
     RecyclerView messageAdapter;
     ArrayList<Messages> messagesArrayList;
+
+    MessagesAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        messagesArrayList = new ArrayList<>();
+
 
         database = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
 
-        receiverName = getIntent().getStringExtra("name");
-        receiverImage = getIntent().getStringExtra("receiverImage");
-        receiverUid = getIntent().getStringExtra("uid");
+        //get intent data
+        ReceiverName = getIntent().getStringExtra("name");
+        ReceiverImage = getIntent().getStringExtra("ReceiverImage");
+        ReceiverUid = getIntent().getStringExtra("uid");
+
+        messagesArrayList = new ArrayList<>();
+
+        profileImage = findViewById(R.id.profile_image);
+        receiverName = findViewById(R.id.receiverName);
 
         messageAdapter = findViewById(R.id.messageAdapter);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
+        messageAdapter.setLayoutManager(linearLayoutManager);
+        adapter = new MessagesAdapter(ChatActivity.this, messagesArrayList);
+        messageAdapter.setAdapter(adapter);
 
-        profileImage = findViewById(R.id.chatProfileImage);
-        receiverChatName = findViewById(R.id.receiver_name);
 
-        Picasso.get().load(receiverImage).into(profileImage);
-        receiverChatName.setText("" + receiverName);
+        sendBtn = findViewById(R.id.sendBtn);
+        edtMessage = findViewById(R.id.edtMessage);
 
-        senderUid = firebaseAuth.getUid();
+        Picasso.get().load(ReceiverImage).into(profileImage);
+        receiverName.setText(""+ReceiverName);
 
-        senderRoom = senderUid+receiverUid;
-        receiverRoom = receiverUid+senderUid;
+        SenderUid = firebaseAuth.getUid();
 
-        sendBtn = findViewById(R.id.send_btn);
-        sendMessage = findViewById(R.id.send_message);
+        senderRoom = SenderUid+ReceiverUid;
+        receiverRoom = ReceiverUid+SenderUid;
+
+
 
         //get sender image
-        DatabaseReference reference = database.getReference().child("user").child(firebaseAuth.getUid());
+        DatabaseReference reference = database.getReference()
+                .child("user").child(SenderUid);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                senderImage = snapshot.child("imageUri").getValue().toString();
-                rImage = receiverImage;
+                sImage = snapshot.child("imageUri").getValue().toString();
+                rImage = ReceiverImage;
             }
 
             @Override
@@ -93,10 +110,12 @@ public class ChatActivity extends AppCompatActivity {
         chatReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                messagesArrayList.clear();
                 for(DataSnapshot dataSnapshot: snapshot.getChildren()){
                     Messages messages = dataSnapshot.getValue(Messages.class);
                     messagesArrayList.add(messages);
                 }
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -109,18 +128,20 @@ public class ChatActivity extends AppCompatActivity {
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String message = sendMessage.getText().toString();
+                String message = edtMessage.getText().toString();
                 if (message.isEmpty()) {
                     Toast.makeText(ChatActivity.this, "Please Enter valid message", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                sendMessage.setText("");
+                edtMessage.setText("");
                 Date date = new Date();
-                Messages messages = new Messages(message, senderUid, date.getTime());
 
+                Messages messages = new Messages(message, SenderUid, date.getTime());
+
+//                database=FirebaseDatabase.getInstance();
                 database.getReference()
                         .child("chats")
-                        .child(senderRoom)
+                        .child(receiverRoom)
                         .child("messages")
                         .push().
                         setValue(messages)
@@ -129,7 +150,7 @@ public class ChatActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         database.getReference()
                                 .child("chats")
-                                .child(receiverRoom)
+                                .child(senderRoom)
                                 .child("messages")
                                 .push()
                                 .setValue(messages)

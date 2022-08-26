@@ -15,7 +15,7 @@
         android:orientation="vertical">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/chatProfileImage"
+            android:id="@+id/profile_image"
             android:layout_width="@dimen/_80sdp"
             android:layout_height="@dimen/_80sdp"
             android:src="@drawable/profile"
@@ -23,7 +23,7 @@
             app:civ_border_width="@dimen/_1sdp" />
 
         <TextView
-            android:id="@+id/receiver_name"
+            android:id="@+id/receiverName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_10sdp"
@@ -38,8 +38,8 @@
         android:id="@+id/messageAdapter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ll1"
-        android:layout_above="@id/ll3"/>
+        android:layout_above="@id/ll3"
+        android:layout_below="@+id/ll1" />
 
     <LinearLayout
         android:id="@+id/ll3"
@@ -58,7 +58,7 @@
             app:cardCornerRadius="@dimen/_540sdp">
 
             <EditText
-                android:id="@+id/send_message"
+                android:id="@+id/edtMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -70,7 +70,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/send_btn"
+            android:id="@+id/sendBtn"
             android:layout_width="@dimen/_80sdp"
             android:layout_height="@dimen/_35sdp"
             android:layout_margin="@dimen/_3sdp"
